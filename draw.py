@@ -1,6 +1,6 @@
 import random
 
-def shuffle(seed=None, n=31):
+def shuffle(seed=None, n=30):
     r = random.Random(seed)
     draws = list(range(1, n+1))
     for i in range(n):
@@ -10,17 +10,13 @@ def shuffle(seed=None, n=31):
         draws[i] = t
     return draws
 
-def next_draw(seed, n=31, discard=set()):
-    draws = shuffle(seed, n)
-    discarded = len(discard)
-    if discard != set(draws[0:discarded]):
-        return Exception(f'All discarded values must be from the beginning of the draw.')
-    return draws[discarded]
-    
+def next_draw(seed, n=30, discard=set()):
+    return [s for s in shuffle(seed, n) if s not in discard][0]
 
 assert len(set(shuffle(None, 100))) == 100
-assert next_draw(0, 31) == 28
-assert next_draw(0, 31, {28}) == 14
-assert next_draw(0, 31, {28, 14}) == 27
+assert next_draw(seed=0, n=31) == 28
+assert next_draw(seed=0, n=31, discard={28}) == 14
+assert next_draw(seed=0, n=31, discard={28, 14}) == 27
+assert next_draw(seed=0, n=31, discard={14}) == 28 # you are allowed to skip
 
 print(f"Your next draw is {next_draw(seed=19810902, discard={10})}")
