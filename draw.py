@@ -1,4 +1,5 @@
 import random
+import collections.abc
 
 def shuffle(seed=None, n=30):
     r = random.Random(seed)
@@ -10,8 +11,12 @@ def shuffle(seed=None, n=30):
         draws[i] = t
     return draws
 
+def to_count(val):
+    return len(val) if isinstance(val, collections.abc.Iterable) else val
+
 def next_draw(seed, n=30, discard=set()):
-    return [s for s in shuffle(seed, n) if s not in discard][0]
+    counts = [to_count(d) for d in discard]
+    return [s for s in shuffle(seed, n) if s not in counts][0]
 
 assert len(set(shuffle(None, 100))) == 100
 first_three_for_seed_0 = [28, 14, 27]
@@ -25,16 +30,16 @@ def instructions(seed, discarded):
         return f"Your next draw is {next_draw(seed=seed)}"
     most_recent_day = max(discarded.keys())
     all_but_most_recent_day = {
-        day: draw
-        for day, draw in discarded.items()
-        if day != most_recent_day}
+        d: to_count(n)
+        for d, n in discarded.items()
+        if d != most_recent_day}
     next_draw_if_you_dont_count_most_recent_day = next_draw(
         seed=seed,
         discard=set(all_but_most_recent_day.values()))
     if next_draw_if_you_dont_count_most_recent_day != discarded[most_recent_day]:
-        return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - discarded[most_recent_day]}"
+        return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])}"
     else:
-        return f"Your next draw is {next_draw(seed=seed, discard=set(discarded.values()))}"
+        return f"Your next draw is {next_draw(seed=seed, discard=set(to_count(d) for d in discarded.values()))}"
 
 assert instructions(seed=0, discarded={}) == f"Your next draw is {first_three_for_seed_0[0]}"
 first_three_for_seed_0_missing_one = [first_three_for_seed_0[0], first_three_for_seed_0[1], first_three_for_seed_0[2] - 1]
@@ -46,8 +51,8 @@ real_discarded_items = {
         20251215: 9,
         20251216: 11,
         20251217: 27,
-        20251218: len({
+        20251218: {
             "bowl of very old mixed nuts",
-        }),
+        },
     }
 print(instructions(seed=19810902, discarded=real_discarded_items))
