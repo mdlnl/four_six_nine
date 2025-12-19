@@ -54,6 +54,21 @@ real_discarded_items = {
         20251218: {
             "bowl of very old mixed nuts",
             "stiffener for long-discarded front door screen",
+            "an opened box of mushrooms that have turned",
+            "an unopened box of mushrooms that have turned",
+            "tub of moldy noosa",
+            "my denim shorts",
+            "unused app 1",
+            "unused app 2",
+            "unused app 3",
+            "unused app 4",
+            "unused app 5",
+            "unused app 6",
+            "unused app 7",
+            "unused app 8",
+            "unused app 9",
+            "unused app 10",
+            "unused app 11",
         },
     }
 print(instructions(seed=19810902, discarded=real_discarded_items))
