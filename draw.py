@@ -1,11 +1,11 @@
-import collections.abc
+from collections.abc import Iterable
 from itertools import takewhile
 from operator import eq
 import random
 
 # -----------------------------------------------------------------------------
 
-def shuffle(seed=None, n=30):
+def shuffle(seed:int=None, n:int=30) -> list[int]:
     r = random.Random(seed)
     draws = list(range(1, n+1))
     for i in range(n):
@@ -20,8 +20,8 @@ assert shuffle(None, 100) != list(range(1,101))
 
 # -----------------------------------------------------------------------------
 
-def to_count(val):
-    return len(val) if isinstance(val, collections.abc.Iterable) else val
+def to_count(val) -> int:
+    return len(val) if isinstance(val, Iterable) else val
 
 assert to_count(1234) == 1234
 assert to_count([1, 2, 3, 4]) == 4
@@ -29,7 +29,7 @@ assert to_count({1, 2, 3, 4}) == 4
 
 # -----------------------------------------------------------------------------
 
-def next_draw(sequence, discard=set()):
+def next_draw(sequence:list[int], discard:Iterable=set()) -> int:
     counts = [to_count(d) for d in discard]
     return [s for s in sequence if s not in counts][0]
 
@@ -40,14 +40,14 @@ assert next_draw([28, 14, 27], discard=[14, 27]) == 28 # you are allowed to skip
 
 # -----------------------------------------------------------------------------
 
-def longest_common_prefix(a, b):
+def longest_common_prefix[T](a:Iterable[T], b:Iterable[T]) -> Iterable[T]:
     return [elem for elem, _ in takewhile(lambda ab: ab[0]==ab[1], zip(a, b))]
 
 assert longest_common_prefix([1,2,3,4], [1,2,3,5]) == [1,2,3]
 
 # -----------------------------------------------------------------------------
 
-def instructions(sequence, discarded):
+def instructions(sequence:Iterable[int], discarded:dict) -> str:
     counts = [to_count(d) for d in discarded.values()]
     prefix = longest_common_prefix(sequence, counts)
     p = len(prefix)
@@ -62,7 +62,7 @@ assert instructions([28, 14, 27], discarded={1:28, 2:14, 3:24}) == f"You still n
 
 # -----------------------------------------------------------------------------
 
-def stats(sequence, discarded):
+def stats(sequence:Iterable[int], discarded:dict) -> str:
     counts = [to_count(d) for d in discarded.values()]
     prefix = longest_common_prefix(sequence, counts)
     complete = f"You have drawn and discarded {','.join(str(p) for p in prefix)}; for a total of {sum(prefix)}."
