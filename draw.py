@@ -1,5 +1,7 @@
-import random
 import collections.abc
+from itertools import takewhile
+from operator import eq
+import random
 
 # -----------------------------------------------------------------------------
 
@@ -38,6 +40,13 @@ assert next_draw([28, 14, 27], discard=[14, 27]) == 28 # you are allowed to skip
 
 # -----------------------------------------------------------------------------
 
+def longest_common_prefix(a, b):
+    return [elem for elem, _ in takewhile(lambda ab: ab[0]==ab[1], zip(a, b))]
+
+assert longest_common_prefix([1,2,3,4], [1,2,3,5]) == [1,2,3]
+
+# -----------------------------------------------------------------------------
+
 def instructions(sequence, discarded):
     if not discarded:
         return f"Your next draw is {next_draw(sequence)}"
@@ -57,6 +66,17 @@ def instructions(sequence, discarded):
 assert instructions([28, 14, 27], discarded={}) == f"Your next draw is 28"
 assert instructions([28, 14, 27], discarded={1:28, 2:14}) == f"Your next draw is 27"
 assert instructions([28, 14, 27], discarded={1:28, 2:14, 3:24}) == f"You still need to discard 3 item(s)"
+
+# -----------------------------------------------------------------------------
+
+def stats(sequence, discarded):
+    counts = [to_count(d) for d in discarded.values()]
+    prefix = longest_common_prefix(sequence, counts)
+    complete = f"You have drawn and discarded {','.join(str(p) for p in prefix)}; for a total of {sum(prefix)}."
+    incomplete = f"In addition, you have discarded {to_count(discarded[len(prefix)])} out of {sequence[len(prefix)]}." if len(prefix) < len(discarded) else ""
+    return complete + incomplete
+
+assert stats(sequence=[28, 14, 27], discarded={1:28, 2:14, 3:27}) == "You have drawn and discarded 28,14,27; for a total of 69."
 
 # -----------------------------------------------------------------------------
 
@@ -87,3 +107,4 @@ real_discarded_items = {
         },
     }
 print(instructions(shuffle(seed=19810902), discarded=real_discarded_items))
+print(stats(shuffle(seed=19810902), discarded=real_discarded_items))
