@@ -36,12 +36,13 @@ def instructions(seed, discarded):
     next_draw_if_you_dont_count_most_recent_day = next_draw(
         seed=seed,
         discard=set(all_but_most_recent_day.values()))
-    if next_draw_if_you_dont_count_most_recent_day != discarded[most_recent_day]:
+    if next_draw_if_you_dont_count_most_recent_day != to_count(discarded[most_recent_day]):
         return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])} item(s)"
     else:
         return f"Your next draw is {next_draw(seed=seed, discard=set(to_count(d) for d in discarded.values()))}"
 
 assert instructions(seed=0, discarded={}) == f"Your next draw is {first_three_for_seed_0[0]}"
+assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0[0:2]))) == f"Your next draw is {first_three_for_seed_0[2]}"
 first_three_for_seed_0_missing_one = [first_three_for_seed_0[0], first_three_for_seed_0[1], first_three_for_seed_0[2] - 1]
 assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0_missing_one))) == f"You still need to discard 1 item(s)"
 
