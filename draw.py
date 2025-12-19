@@ -14,37 +14,35 @@ def shuffle(seed=None, n=30):
 def to_count(val):
     return len(val) if isinstance(val, collections.abc.Iterable) else val
 
-def next_draw(seed, n=30, discard=set()):
+def next_draw(sequence, discard=set()):
     counts = [to_count(d) for d in discard]
-    return [s for s in shuffle(seed, n) if s not in counts][0]
+    return [s for s in sequence if s not in counts][0]
 
 assert len(set(shuffle(None, 100))) == 100
-first_three_for_seed_0 = [28, 14, 27]
-assert next_draw(seed=0, n=31) == first_three_for_seed_0[0]
-assert next_draw(seed=0, n=31, discard=first_three_for_seed_0[0:1]) == first_three_for_seed_0[1]
-assert next_draw(seed=0, n=31, discard=first_three_for_seed_0[0:2]) == first_three_for_seed_0[2]
-assert next_draw(seed=0, n=31, discard=first_three_for_seed_0[1:3]) == first_three_for_seed_0[0] # you are allowed to skip
+assert next_draw([28, 14, 27]) == 28
+assert next_draw([28, 14, 27], discard=[28]) == 14
+assert next_draw([28, 14, 27], discard=[28, 14]) == 27
+assert next_draw([28, 14, 27], discard=[14, 27]) == 28 # you are allowed to skip
 
-def instructions(seed, discarded):
+def instructions(sequence, discarded):
     if not discarded:
-        return f"Your next draw is {next_draw(seed=seed)}"
+        return f"Your next draw is {next_draw(sequence)}"
     most_recent_day = max(discarded.keys())
     all_but_most_recent_day = {
         d: to_count(n)
         for d, n in discarded.items()
         if d != most_recent_day}
     next_draw_if_you_dont_count_most_recent_day = next_draw(
-        seed=seed,
+        sequence=sequence,
         discard=set(all_but_most_recent_day.values()))
     if next_draw_if_you_dont_count_most_recent_day != to_count(discarded[most_recent_day]):
         return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])} item(s)"
     else:
-        return f"Your next draw is {next_draw(seed=seed, discard=set(to_count(d) for d in discarded.values()))}"
+        return f"Your next draw is {next_draw(sequence=sequence, discard=set(to_count(d) for d in discarded.values()))}"
 
-assert instructions(seed=0, discarded={}) == f"Your next draw is {first_three_for_seed_0[0]}"
-assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0[0:2]))) == f"Your next draw is {first_three_for_seed_0[2]}"
-first_three_for_seed_0_missing_one = [first_three_for_seed_0[0], first_three_for_seed_0[1], first_three_for_seed_0[2] - 1]
-assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0_missing_one))) == f"You still need to discard 1 item(s)"
+assert instructions([28, 14, 27], discarded={}) == f"Your next draw is 28"
+assert instructions([28, 14, 27], discarded={1:28, 2:14}) == f"Your next draw is 27"
+assert instructions([28, 14, 27], discarded={1:28, 2:14, 3:24}) == f"You still need to discard 3 item(s)"
 
 real_discarded_items = {
         20251213: 10,
@@ -72,4 +70,4 @@ real_discarded_items = {
             "unused app 11",
         },
     }
-print(instructions(seed=19810902, discarded=real_discarded_items))
+print(instructions(shuffle(seed=19810902), discarded=real_discarded_items))
