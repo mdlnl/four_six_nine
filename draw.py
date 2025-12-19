@@ -48,20 +48,13 @@ assert longest_common_prefix([1,2,3,4], [1,2,3,5]) == [1,2,3]
 # -----------------------------------------------------------------------------
 
 def instructions(sequence, discarded):
-    if not discarded:
-        return f"Your next draw is {next_draw(sequence)}"
-    most_recent_day = max(discarded.keys())
-    all_but_most_recent_day = {
-        d: to_count(n)
-        for d, n in discarded.items()
-        if d != most_recent_day}
-    next_draw_if_you_dont_count_most_recent_day = next_draw(
-        sequence=sequence,
-        discard=set(all_but_most_recent_day.values()))
-    if next_draw_if_you_dont_count_most_recent_day != to_count(discarded[most_recent_day]):
-        return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])} item(s)"
+    counts = [to_count(d) for d in discarded.values()]
+    prefix = longest_common_prefix(sequence, counts)
+    p = len(prefix)
+    if p < len(discarded):
+        return f"You still need to discard {sequence[p] - counts[p]} item(s)"
     else:
-        return f"Your next draw is {next_draw(sequence=sequence, discard=set(to_count(d) for d in discarded.values()))}"
+        return f"Your next draw is {next_draw(sequence=sequence, discard=counts)}"
 
 assert instructions([28, 14, 27], discarded={}) == f"Your next draw is 28"
 assert instructions([28, 14, 27], discarded={1:28, 2:14}) == f"Your next draw is 27"
