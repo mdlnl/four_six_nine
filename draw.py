@@ -1,6 +1,8 @@
 import random
 import collections.abc
 
+# -----------------------------------------------------------------------------
+
 def shuffle(seed=None, n=30):
     r = random.Random(seed)
     draws = list(range(1, n+1))
@@ -11,18 +13,30 @@ def shuffle(seed=None, n=30):
         draws[i] = t
     return draws
 
+assert len(set(shuffle(None, 100))) == 100
+assert shuffle(None, 100) != list(range(1,101))
+
+# -----------------------------------------------------------------------------
+
 def to_count(val):
     return len(val) if isinstance(val, collections.abc.Iterable) else val
+
+assert to_count(1234) == 1234
+assert to_count([1, 2, 3, 4]) == 4
+assert to_count({1, 2, 3, 4}) == 4
+
+# -----------------------------------------------------------------------------
 
 def next_draw(sequence, discard=set()):
     counts = [to_count(d) for d in discard]
     return [s for s in sequence if s not in counts][0]
 
-assert len(set(shuffle(None, 100))) == 100
 assert next_draw([28, 14, 27]) == 28
 assert next_draw([28, 14, 27], discard=[28]) == 14
 assert next_draw([28, 14, 27], discard=[28, 14]) == 27
 assert next_draw([28, 14, 27], discard=[14, 27]) == 28 # you are allowed to skip
+
+# -----------------------------------------------------------------------------
 
 def instructions(sequence, discarded):
     if not discarded:
@@ -43,6 +57,8 @@ def instructions(sequence, discarded):
 assert instructions([28, 14, 27], discarded={}) == f"Your next draw is 28"
 assert instructions([28, 14, 27], discarded={1:28, 2:14}) == f"Your next draw is 27"
 assert instructions([28, 14, 27], discarded={1:28, 2:14, 3:24}) == f"You still need to discard 3 item(s)"
+
+# -----------------------------------------------------------------------------
 
 real_discarded_items = {
         20251213: 10,
