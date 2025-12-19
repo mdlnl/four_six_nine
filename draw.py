@@ -37,13 +37,13 @@ def instructions(seed, discarded):
         seed=seed,
         discard=set(all_but_most_recent_day.values()))
     if next_draw_if_you_dont_count_most_recent_day != discarded[most_recent_day]:
-        return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])}"
+        return f"You still need to discard {next_draw_if_you_dont_count_most_recent_day - to_count(discarded[most_recent_day])} item(s)"
     else:
         return f"Your next draw is {next_draw(seed=seed, discard=set(to_count(d) for d in discarded.values()))}"
 
 assert instructions(seed=0, discarded={}) == f"Your next draw is {first_three_for_seed_0[0]}"
 first_three_for_seed_0_missing_one = [first_three_for_seed_0[0], first_three_for_seed_0[1], first_three_for_seed_0[2] - 1]
-assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0_missing_one))) == f"You still need to discard 1"
+assert instructions(seed=0, discarded=dict(enumerate(first_three_for_seed_0_missing_one))) == f"You still need to discard 1 item(s)"
 
 real_discarded_items = {
         20251213: 10,
@@ -53,6 +53,7 @@ real_discarded_items = {
         20251217: 27,
         20251218: {
             "bowl of very old mixed nuts",
+            "stiffener for long-discarded front door screen",
         },
     }
 print(instructions(seed=19810902, discarded=real_discarded_items))
